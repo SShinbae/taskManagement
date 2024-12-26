@@ -26,13 +26,22 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return new TaskViewHolder(view);
     }
 
+//    @Override
+//    public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+//        Task task = taskList.get(position);
+//        holder.title.setText(task.getTitle());
+//        holder.description.setText(task.getDescription());
+//        holder.dueDate.setText(formatDate(task.getDueDate()));
+//    }
+
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Task task = taskList.get(position);
-        holder.title.setText(task.getTitle());
-        holder.description.setText(task.getDescription());
-        holder.dueDate.setText(formatDate(task.getDueDate()));
+        holder.title.setText(task.getTitle()); // Use the getter
+        holder.description.setText(task.getDescription()); // Use the getter
+        holder.dueDate.setText(formatDate(task.getDueDate())); // Use the getter
     }
+
 
     @Override
     public int getItemCount() {
