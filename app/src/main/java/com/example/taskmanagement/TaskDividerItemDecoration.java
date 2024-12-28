@@ -32,7 +32,8 @@ public class TaskDividerItemDecoration extends RecyclerView.ItemDecoration {
             View child = parent.getChildAt(i);
             int position = parent.getChildAdapterPosition(child);
 
-            if (position < taskList.size() - 1 && taskList.get(position).isCompleted() != taskList.get(position + 1).isCompleted()) {
+            if (position < taskList.size() - 1 && taskList.get(position) != null && taskList.get(position + 1) != null &&
+                taskList.get(position).isCompleted() != taskList.get(position + 1).isCompleted()) {
                 float left = parent.getPaddingLeft();
                 float right = parent.getWidth() - parent.getPaddingRight();
                 float top = child.getBottom();
@@ -46,7 +47,8 @@ public class TaskDividerItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         int position = parent.getChildAdapterPosition(view);
-        if (position < taskList.size() - 1 && taskList.get(position).isCompleted() != taskList.get(position + 1).isCompleted()) {
+        if (position < taskList.size() - 1 && taskList.get(position) != null && taskList.get(position + 1) != null &&
+            taskList.get(position).isCompleted() != taskList.get(position + 1).isCompleted()) {
             outRect.bottom = dividerHeight;
         } else {
             outRect.bottom = 0;
