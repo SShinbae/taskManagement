@@ -376,6 +376,82 @@
 //     }
 // }
 
+// package com.example.taskmanagement;
+
+// import android.content.Intent;
+// import android.content.SharedPreferences;
+// import android.os.AsyncTask;
+// import android.os.Bundle;
+
+// import androidx.appcompat.app.AppCompatActivity;
+// import androidx.recyclerview.widget.LinearLayoutManager;
+// import androidx.recyclerview.widget.RecyclerView;
+
+// import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+// import java.util.ArrayList;
+// import java.util.List;
+
+// public class MainActivity extends AppCompatActivity {
+//     private RecyclerView recyclerView;
+//     private FloatingActionButton fabAddTask;
+//     private List<Task> taskList; // Define taskList
+//     private TaskAdapter taskAdapter;
+//     private SharedPreferences sharedPreferences;
+//     private SharedPreferences.Editor editor;
+//     private TaskDao taskDao;
+
+//     @Override
+//     protected void onCreate(Bundle savedInstanceState) {
+//         super.onCreate(savedInstanceState);
+//         setContentView(R.layout.activity_main);
+
+//         recyclerView = findViewById(R.id.recyclerView);
+//         fabAddTask = findViewById(R.id.fabAddTask);
+
+//         // Initialize the task list
+//         taskList = new ArrayList<>();
+//         //populateTaskList(); // Add tasks (mock data or real data)
+
+//         // Set up RecyclerView (adapter, layout manager, etc.)
+//         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//         taskAdapter = new TaskAdapter(this, taskList); // Pass the context and task list to the adapter
+//         recyclerView.setAdapter(taskAdapter);
+
+//         // Initialize SharedPreferences
+//         sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+//         editor = sharedPreferences.edit();
+
+//         // Initialize TaskDao
+//         taskDao = DatabaseApp.getDatabase(this).taskDao();
+
+//         // Add task button
+//         fabAddTask.setOnClickListener(view -> {
+//             Intent intent = new Intent(MainActivity.this, AddTaskActivity.class); // Replace with the correct activity
+//             startActivity(intent);
+//         });
+//     }
+
+//     @Override
+//     protected void onResume() {
+//         super.onResume();
+//         new LoadTasksAsyncTask().execute();
+//     }
+
+//     private class LoadTasksAsyncTask extends AsyncTask<Void, Void, List<Task>> {
+//         @Override
+//         protected List<Task> doInBackground(Void... voids) {
+//             return taskDao.getAllTasks();
+//         }
+
+//         @Override
+//         protectged void onPostExecute(List<Task> tasks) {
+//             taskList.clear();
+//             taskList.addAll(tasks);
+//             taskAdapter.notifyDataSetChanged();
+//         }
+//     }
+// }
 package com.example.taskmanagement;
 
 import android.content.Intent;
@@ -446,9 +522,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List<Task> tasks) {
-            taskList.clear();
-            taskList.addAll(tasks);
-            taskAdapter.notifyDataSetChanged();
+            taskAdapter.updateTaskList(tasks);
         }
     }
 }
