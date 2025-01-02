@@ -721,11 +721,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 searchTasks(s.toString());
+                //new LoadTasksAsyncTask().execute();
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                // Do nothing
+                //searchTasks(s.toString());
+                new LoadTasksAsyncTask().execute();
             }
         });
     }
@@ -739,8 +741,8 @@ public class MainActivity extends AppCompatActivity {
     private void searchTasks(String query) {
         List<Task> filteredTaskList = new ArrayList<>();
         for (Task task : taskList) {
-            if (task.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                    task.getDescription().toLowerCase().contains(query.toLowerCase())) {
+            if (task != null && (task.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                    task.getDescription().toLowerCase().contains(query.toLowerCase()))) {
                 filteredTaskList.add(task);
             }
         }
