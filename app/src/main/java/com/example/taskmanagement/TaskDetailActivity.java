@@ -378,6 +378,10 @@ public class TaskDetailActivity extends AppCompatActivity {
         btnEditTask.setOnClickListener(v -> {
             Intent intent = new Intent(TaskDetailActivity.this, AddTaskActivity.class);
             intent.putExtra("TASK_ID", currentTask.id);
+            intent.putExtra("TASK_TITLE", currentTask.title);
+            intent.putExtra("TASK_DESCRIPTION", currentTask.description);
+            intent.putExtra("TASK_DUE_DATE", currentTask.dueDate);
+            //.putExtra("TASK_PRIORITY", currentTask.priority);
             startActivity(intent);
         });
 

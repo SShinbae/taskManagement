@@ -23,6 +23,7 @@ public class AddTaskActivity extends AppCompatActivity {
     private TaskDao taskDao;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private int taskId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,18 @@ public class AddTaskActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         taskDao = DatabaseApp.getDatabase(this).taskDao();
+
+        //editing functionality
+        taskId = getIntent().getIntExtra("TASK_ID", -1);
+        if (taskId != -1){
+            String title = getIntent().getStringExtra("TASK_TITLE");
+            String description = getIntent().getStringExtra("TASK_DESCRIPTION");
+            long dueDateMillis = getIntent().getLongExtra("TASK_DUE_DATE", -1);
+
+            binding.editTitle.setText(title);
+            binding.editDescription.setText(description);
+            binding.editDueDate.setText(dateFormat.format(new Date(dueDateMillis)));
+        }
 
         binding.btnSave.setOnClickListener(v -> saveTask());
 
@@ -71,17 +84,33 @@ public class AddTaskActivity extends AppCompatActivity {
             Date dueDate = dateFormat.parse(dueDateString);
             long dueDateMillis = dueDate.getTime();
             Task newTask = new Task(title, description, dueDateMillis, false);
-            executorService.execute(() -> {
-                try {
-                    taskDao.insert(newTask);
-                    runOnUiThread(() -> {
-                        Toast.makeText(AddTaskActivity.this, "Task added successfully", Toast.LENGTH_SHORT).show();
-                        finish(); // Close AddTaskActivity and return to MainActivity
-                    });
-                } catch (Exception e) {
-                    Log.e("AddTaskActivity", "Error inserting task", e);
-                }
-            });
+            if(taskId != -1) {
+                newTask.id = taskId;
+                executorService.execute(() -> {
+                    try {
+                        taskDao.update(newTask);
+                        runOnUiThread(() -> {
+                            Toast.makeText(AddTaskActivity.this, "Task updated successfully", Toast.LENGTH_SHORT).show();
+                            finish(); // Close AddTaskActivity and return to MainActivity
+                        });
+                    } catch (Exception e) {
+
+                        Log.e("AddTaskActivity", "Error updating task", e);
+                    }
+                });
+            }else{
+                executorService.execute(() -> {
+                    try {
+                        taskDao.insert(newTask);
+                        runOnUiThread(() -> {
+                            Toast.makeText(AddTaskActivity.this, "Task added successfully", Toast.LENGTH_SHORT).show();
+                            finish(); // Close AddTaskActivity and return to MainActivity
+                        });
+                    } catch (Exception e) {
+                        Log.e("AddTaskActivity", "Error inserting task", e);
+                    }
+                });
+            }
         } catch (ParseException e) {
             Toast.makeText(this, "Invalid date format", Toast.LENGTH_SHORT).show();
             Log.e("AddTaskActivity", "Date parsing error", e);
