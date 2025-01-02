@@ -391,6 +391,14 @@ public class TaskDetailActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Reload Task
+        int taskId = getIntent().getIntExtra("TASK_ID", -1);
+        new LoadTaskAsyncTask().execute(taskId);
+    }
+
     private class LoadTaskAsyncTask extends AsyncTask<Integer, Void, Task> {
         @Override
         protected Task doInBackground(Integer... params) {
