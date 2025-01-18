@@ -5,9 +5,10 @@
     android:padding="16dp">
 
     <TextView
+        android:id="@+id/headerTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Completed Tasks"
+        android:text="Header Title"
         android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
