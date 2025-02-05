@@ -3,6 +3,7 @@ package com.example.taskmanagement;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,40 +34,45 @@ public class AddTaskActivity extends AppCompatActivity {
 
         taskDao = DatabaseApp.getDatabase(this).taskDao();
 
-        //editing functionality
+        // Set up priority spinner
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.priority_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerPriority.setAdapter(adapter);
+
+        // Editing functionality
         taskId = getIntent().getIntExtra("TASK_ID", -1);
-        if (taskId != -1){
+        if (taskId != -1) {
             String title = getIntent().getStringExtra("TASK_TITLE");
             String description = getIntent().getStringExtra("TASK_DESCRIPTION");
             long dueDateMillis = getIntent().getLongExtra("TASK_DUE_DATE", -1);
+            String priority = getIntent().getStringExtra("TASK_PRIORITY");
 
             binding.editTitle.setText(title);
             binding.editDescription.setText(description);
             binding.editDueDate.setText(dateFormat.format(new Date(dueDateMillis)));
+            if (priority != null) {
+                int spinnerPosition = adapter.getPosition(priority);
+                binding.spinnerPriority.setSelection(spinnerPosition);
+            }
         }
 
         binding.btnSave.setOnClickListener(v -> saveTask());
-
         binding.editDueDate.setOnClickListener(v -> showDatePickerDialog());
     }
 
     private void showDatePickerDialog() {
-        Calendar calendar = Calendar.getInstance();
+        final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
                 (view, selectedYear, selectedMonth, selectedDay) -> {
-                    Calendar selectedCalendar = Calendar.getInstance();
-                    selectedCalendar.set(selectedYear, selectedMonth, selectedDay);
-                    binding.editDueDate.setText(dateFormat.format(selectedCalendar.getTime()));
-                },
-                year,
-                month,
-                day
-        );
+                    calendar.set(selectedYear, selectedMonth, selectedDay);
+                    String selectedDate = dateFormat.format(calendar.getTime());
+                    binding.editDueDate.setText(selectedDate);
+                }, year, month, day);
         datePickerDialog.show();
     }
 
@@ -74,6 +80,7 @@ public class AddTaskActivity extends AppCompatActivity {
         String title = binding.editTitle.getText().toString().trim();
         String description = binding.editDescription.getText().toString().trim();
         String dueDateString = binding.editDueDate.getText().toString().trim();
+        String priority = binding.spinnerPriority.getSelectedItem().toString();
 
         if (title.isEmpty() || description.isEmpty() || dueDateString.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
@@ -83,8 +90,8 @@ public class AddTaskActivity extends AppCompatActivity {
         try {
             Date dueDate = dateFormat.parse(dueDateString);
             long dueDateMillis = dueDate.getTime();
-            Task newTask = new Task(title, description, dueDateMillis, false);
-            if(taskId != -1) {
+            Task newTask = new Task(title, description, dueDateMillis, false, priority);
+            if (taskId != -1) {
                 newTask.id = taskId;
                 executorService.execute(() -> {
                     try {
@@ -94,11 +101,10 @@ public class AddTaskActivity extends AppCompatActivity {
                             finish(); // Close AddTaskActivity and return to MainActivity
                         });
                     } catch (Exception e) {
-
                         Log.e("AddTaskActivity", "Error updating task", e);
                     }
                 });
-            }else{
+            } else {
                 executorService.execute(() -> {
                     try {
                         taskDao.insert(newTask);

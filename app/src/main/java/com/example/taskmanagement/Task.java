@@ -12,16 +12,14 @@ public class Task {
     public long dueDate;
     public boolean isCompleted;
     public String priority;
-    //public boolean isCompleted;
 
     // Constructor
-    public Task(String title, String description, long dueDate, boolean isCompleted) {
+    public Task(String title, String description, long dueDate, boolean isCompleted, String priority) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.isCompleted = isCompleted;
         this.priority = priority;
-        //this.isCompleted = isCompleted;
     }
 
     // Getter methods
@@ -41,6 +39,9 @@ public class Task {
         return isCompleted;
     }
 
+    public String getPriority() {
+        return priority;
+    }
 
     public void setCompleted(boolean isCompleted) {
         this.isCompleted = isCompleted;
